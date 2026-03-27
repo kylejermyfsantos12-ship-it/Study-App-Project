@@ -1,0 +1,170 @@
+/* ─── RESET & BASE ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-base: #0e0f11;
+  --bg-surface: #16181c;
+  --bg-raised: #1e2128;
+  --bg-hover: #252830;
+  --border: #2a2d35;
+  --accent: #4f8ef7;
+  --accent-dim: #2a4a8a;
+  --accent-glow: rgba(79, 142, 247, 0.15);
+  --text-primary: #e8eaf0;
+  --text-secondary: #8b90a0;
+  --text-muted: #545868;
+  --success: #3ecf8e;
+  --warning: #f5a623;
+  --danger: #e05c5c;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --font-main: "DM Sans", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --sidebar-w: 260px;
+  --header-h: 52px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── APP SHELL ─────────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ─── HEADER ────────────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-h);
+  padding: 0 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.app-logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.app-logo .accent {
+  color: var(--accent);
+}
+
+.mode-toggle {
+  display: flex;
+  background: var(--bg-raised);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.mode-btn {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mode-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.mode-btn:not(.active):hover {
+  color: var(--text-primary);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ─── BODY LAYOUT ───────────────────────────────────────────────── */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── MAIN CONTENT ──────────────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-base);
+}
+
+/* ─── SCROLLBAR ─────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─── UTILITY ───────────────────────────────────────────────────── */
+button {
+  font-family: var(--font-main);
+  cursor: pointer;
+}
+input,
+textarea {
+  font-family: var(--font-main);
+}
+
+/* ─── MOBILE ────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  :root {
+    --sidebar-w: 0px;
+  }
+  .app-header {
+    padding: 0 12px;
+  }
+}

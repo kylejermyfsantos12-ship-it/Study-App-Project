@@ -1,0 +1,131 @@
+/* ─── SIDEBAR ───────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.upload-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.upload-btn:hover {
+  background: #3a7de0;
+}
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 32px 12px;
+  text-align: center;
+}
+
+.sidebar-empty p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.upload-cta {
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+}
+
+.upload-cta:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.doc-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.doc-item.active {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.doc-item-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.doc-item-name {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── MOBILE — hide sidebar ─────────────────────────────────────── */
+@media (max-width: 640px) {
+  .sidebar {
+    display: none;
+  }
+}

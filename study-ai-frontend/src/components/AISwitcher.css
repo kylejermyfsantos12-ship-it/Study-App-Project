@@ -1,0 +1,155 @@
+/* ─── AI SWITCHER ───────────────────────────────────────────────── */
+.ai-switcher {
+  position: relative;
+}
+
+.ai-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.ai-trigger:hover {
+  border-color: var(--accent);
+}
+
+.ai-trigger-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+}
+
+.ai-trigger-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.ai-trigger-via {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.ai-trigger-arrow {
+  font-size: 11px;
+  color: var(--text-muted);
+  transition: transform 0.15s ease;
+}
+
+.ai-trigger-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* ─── DROPDOWN ──────────────────────────────────────────────────── */
+.ai-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 260px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  z-index: 100;
+  animation: dropIn 0.12s ease;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-dropdown-header {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.ai-option:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.ai-option.active {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.ai-option-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+}
+
+.ai-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ai-option-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.ai-option-via {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.ai-option-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 20px;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ai-check {
+  font-size: 13px;
+  color: var(--accent);
+  margin-left: auto;
+}
