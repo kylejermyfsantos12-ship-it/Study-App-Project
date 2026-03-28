@@ -8,16 +8,10 @@ const STUDY_AIs = [
 ];
 
 const CODE_AIs = [
-  {
-    id: "qwen3",
-    label: "Qwen3 Coder 480B",
-    via: "OpenRouter",
-    badge: "default",
-  },
-  { id: "qwen25", label: "Qwen2.5 Coder 32B", via: "OpenRouter", badge: "" },
+  { id: "qwen3", label: "Qwen 2.5 72B", via: "OpenRouter", badge: "default" },
+  { id: "qwen25", label: "Qwen 2.5 Coder 32B", via: "OpenRouter", badge: "" },
   { id: "groq", label: "Llama 3.3 70B", via: "Groq", badge: "" },
 ];
-
 function AISwitcher({ selectedAI, setSelectedAI, mode }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);

@@ -1,76 +1,113 @@
 const express = require("express");
 const router = express.Router();
 const Document = require("../models/Document");
+const Session = require("../models/Session");
+const { routeToAI } = require("../utils/aiRouter");
+const { getSystemPrompt } = require("../utils/systemPrompts");
 
 // POST /api/chat
 router.post("/", async (req, res) => {
   try {
-    const { documentId, message, chatHistory = [] } = req.body;
+    const {
+      message,
+      documentId,
+      aiProvider = "groq",
+      mode = "study",
+      sessionId,
+      history = [],
+      replyTo = null,
+    } = req.body;
 
-    if (!documentId || !message) {
-      return res
-        .status(400)
-        .json({ error: "documentId and message are required" });
+    if (!message) {
+      return res.status(400).json({ error: "message is required" });
     }
 
-    const document = await Document.findById(documentId);
-    if (!document) {
-      return res.status(404).json({ error: "Document not found" });
+    // Build message array for AI
+    const messages = [];
+
+    // Inject document context if a doc is selected
+    if (documentId) {
+      const document = await Document.findById(documentId);
+      if (document && document.extractedText) {
+        messages.push({
+          role: "user",
+          content: `Here is the document I want to discuss:\n\n${document.extractedText}`,
+        });
+        messages.push({
+          role: "assistant",
+          content: `I have read the document "${document.originalName}". Ask me anything about it.`,
+        });
+      }
     }
 
-    // Build message array with full chat history
-    const messages = [
-      // Inject document as first context message
-      {
-        role: "user",
-        content: `Here is the document I want to discuss:\n\n${document.extractedText}`,
-      },
-      {
-        role: "assistant",
-        content: `I have read the document "${document.originalName}". Ask me anything about it.`,
-      },
-      // Append all previous messages from history
-      ...chatHistory,
-      // Append the new message
-      {
-        role: "user",
-        content: message,
-      },
-    ];
+    // Append chat history
+    history.forEach((m) => {
+      messages.push({ role: m.role, content: m.content });
+    });
 
-    const response = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          max_tokens: 2048,
-          messages: [
-            {
-              role: "system",
-              content: `You are an intelligent academic study assistant. Always reference the uploaded document when answering. Cite which part of the document your answer comes from. Explain concepts clearly, as if teaching a student. Never make up information not in the document. Tone: friendly, patient, encouraging.`,
-            },
-            ...messages,
-          ],
-        }),
-      },
+    // Append the new message (with reply context if replying)
+    if (replyTo) {
+      messages.push({
+        role: "user",
+        content: `[Replying to: "${replyTo.content?.slice(0, 200) || ""}"]\n\n${message}`,
+      });
+    } else {
+      messages.push({ role: "user", content: message });
+    }
+
+    // Get system prompt for this mode
+    const systemPrompt = getSystemPrompt(mode);
+
+    // Route to the selected AI
+    const { reply, aiUsed, warning } = await routeToAI(
+      aiProvider,
+      messages,
+      systemPrompt,
     );
 
-    const data = await response.json();
-    const reply = data.choices[0].message.content;
+    // Save to session in MongoDB
+    let session;
+    if (sessionId) {
+      session = await Session.findById(sessionId);
+    }
+
+    if (!session) {
+      // Create new session, title = first 40 chars of first message
+      session = new Session({
+        mode,
+        title: message.slice(0, 40) + (message.length > 40 ? "…" : ""),
+      });
+    }
+
+    // Push user message
+    session.messages.push({
+      role: "user",
+      text: message,
+      replyTo: replyTo
+        ? { role: replyTo.role, text: replyTo.content }
+        : undefined,
+    });
+
+    // Push assistant reply
+    session.messages.push({
+      role: "assistant",
+      text: reply,
+      aiUsed,
+    });
+
+    session.updatedAt = new Date();
+    await session.save();
 
     res.json({
       success: true,
       reply,
-      aiUsed: "groq",
+      aiUsed,
+      warning: warning || null,
+      sessionId: session._id,
     });
   } catch (error) {
     console.error("Chat route error:", error);
-    res.status(500).json({ error: "Failed to get response" });
+    res.status(500).json({ error: "Failed to get response: " + error.message });
   }
 });
 

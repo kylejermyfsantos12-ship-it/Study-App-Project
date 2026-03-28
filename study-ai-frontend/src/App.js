@@ -1,41 +1,50 @@
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import ChatWindow from "./components/ChatWindow";
-import UploadPanel from "./components/UploadPanel";
 import AISwitcher from "./components/AISwitcher";
 import "./App.css";
 
-function App() {
-  const [mode, setMode] = useState("study"); // 'study' | 'code'
-  const [selectedDoc, setSelectedDoc] = useState(null); // currently active document
-  const [documents, setDocuments] = useState([]); // all uploaded docs
-  const [selectedAI, setSelectedAI] = useState("groq"); // active AI provider
-  const [showUpload, setShowUpload] = useState(false); // toggle upload panel
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-  const handleDocumentUploaded = (doc) => {
-    setDocuments((prev) => [doc, ...prev]);
-    setSelectedDoc(doc);
-    setShowUpload(false);
+function App() {
+  const [mode, setMode] = useState("study");
+  const [selectedAI, setSelectedAI] = useState("groq");
+  const [currentSessionId, setCurrentSessionId] = useState(null);
+  const [sidebarKey, setSidebarKey] = useState(0);
+
+  const handleNewChat = () => {
+    setCurrentSessionId(null);
+  };
+
+  const handleSelectSession = (id) => {
+    setCurrentSessionId(id);
+  };
+
+  const handleSessionCreated = (id) => {
+    setCurrentSessionId(id);
+    setSidebarKey((k) => k + 1); // refresh sidebar list
+  };
+
+  const handleModeSwitch = (newMode) => {
+    setMode(newMode);
+    setCurrentSessionId(null);
+    setSelectedAI(newMode === "study" ? "groq" : "qwen3");
   };
 
   return (
     <div className="app">
-      {/* TOP BAR */}
       <header className="app-header">
         <div className="header-left">
-          <span className="app-logo">
-            study<span className="accent">AI</span>
-          </span>
           <div className="mode-toggle">
             <button
               className={`mode-btn ${mode === "study" ? "active" : ""}`}
-              onClick={() => setMode("study")}
+              onClick={() => handleModeSwitch("study")}
             >
               Study
             </button>
             <button
               className={`mode-btn ${mode === "code" ? "active" : ""}`}
-              onClick={() => setMode("code")}
+              onClick={() => handleModeSwitch("code")}
             >
               Code
             </button>
@@ -50,29 +59,22 @@ function App() {
         </div>
       </header>
 
-      {/* MAIN LAYOUT */}
       <div className="app-body">
         <Sidebar
-          documents={documents}
-          selectedDoc={selectedDoc}
-          setSelectedDoc={setSelectedDoc}
-          onUploadClick={() => setShowUpload(true)}
+          key={sidebarKey}
           mode={mode}
+          currentSessionId={currentSessionId}
+          onSelectSession={handleSelectSession}
+          onNewChat={handleNewChat}
+          onDeleteSession={() => setSidebarKey((k) => k + 1)}
         />
-
         <main className="main-content">
-          {showUpload ? (
-            <UploadPanel
-              onUploaded={handleDocumentUploaded}
-              onCancel={() => setShowUpload(false)}
-            />
-          ) : (
-            <ChatWindow
-              selectedDoc={selectedDoc}
-              selectedAI={selectedAI}
-              mode={mode}
-            />
-          )}
+          <ChatWindow
+            mode={mode}
+            selectedAI={selectedAI}
+            currentSessionId={currentSessionId}
+            onSessionCreated={handleSessionCreated}
+          />
         </main>
       </div>
     </div>

@@ -21,9 +21,11 @@ app.get("/api/health", (req, res) => {
     db: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
   });
 });
+
 app.use("/api/answer", require("./routes/answer"));
 app.use("/api/chat", require("./routes/chat"));
 app.use("/api/upload", require("./routes/upload"));
+app.use("/api/sessions", require("./routes/sessions"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

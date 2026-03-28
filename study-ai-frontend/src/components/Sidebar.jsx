@@ -1,66 +1,97 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./Sidebar.css";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 function Sidebar({
-  documents,
-  selectedDoc,
-  setSelectedDoc,
-  onUploadClick,
   mode,
+  currentSessionId,
+  onSelectSession,
+  onNewChat,
+  onDeleteSession,
 }) {
+  const [sessions, setSessions] = useState([]);
+
+  useEffect(() => {
+    fetchSessions();
+  }, [mode]);
+
+  const fetchSessions = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/sessions?mode=${mode}`);
+      const data = await res.json();
+      if (data.success) setSessions(data.sessions);
+    } catch (err) {
+      console.error("Failed to load sessions:", err);
+    }
+  };
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation();
+    await fetch(`${API_URL}/api/sessions/${id}`, { method: "DELETE" });
+    setSessions((prev) => prev.filter((s) => s._id !== id));
+    if (currentSessionId === id) onNewChat();
+  };
+
+  const groupByDate = (sessions) => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const groups = { Today: [], Yesterday: [], "Past 7 Days": [], Older: [] };
+    sessions.forEach((s) => {
+      const d = new Date(s.updatedAt);
+      if (d.toDateString() === today.toDateString()) groups["Today"].push(s);
+      else if (d.toDateString() === yesterday.toDateString())
+        groups["Yesterday"].push(s);
+      else if ((today - d) / (1000 * 60 * 60 * 24) <= 7)
+        groups["Past 7 Days"].push(s);
+      else groups["Older"].push(s);
+    });
+    return groups;
+  };
+
+  const grouped = groupByDate(sessions);
+
   return (
     <aside className="sidebar">
-      <div className="sidebar-header">
-        <span className="sidebar-title">
-          {mode === "study" ? "Documents" : "Project Files"}
+      <div className="sidebar-top">
+        <span className="app-logo-side">
+          study<span className="accent">AI</span>
         </span>
-        <button
-          className="upload-btn"
-          onClick={onUploadClick}
-          title="Upload file"
-        >
-          +
+        <button className="new-chat-btn" onClick={onNewChat} title="New Chat">
+          ✏️
         </button>
       </div>
 
       <div className="sidebar-list">
-        {documents.length === 0 ? (
-          <div className="sidebar-empty">
-            <p>No files yet.</p>
-            <button className="upload-cta" onClick={onUploadClick}>
-              Upload a file
-            </button>
-          </div>
-        ) : (
-          documents.map((doc) => (
-            <button
-              key={doc._id}
-              className={`doc-item ${selectedDoc?._id === doc._id ? "active" : ""}`}
-              onClick={() => setSelectedDoc(doc)}
-            >
-              <span className="doc-item-icon">{getIcon(doc.fileType)}</span>
-              <span className="doc-item-name">{doc.originalName}</span>
-            </button>
-          ))
+        {Object.entries(grouped).map(([label, items]) =>
+          items.length > 0 ? (
+            <div key={label} className="session-group">
+              <span className="session-group-label">{label}</span>
+              {items.map((s) => (
+                <div
+                  key={s._id}
+                  className={`session-item ${currentSessionId === s._id ? "active" : ""}`}
+                  onClick={() => onSelectSession(s._id)}
+                >
+                  <span className="session-title">{s.title || "New Chat"}</span>
+                  <button
+                    className="session-delete"
+                    onClick={(e) => handleDelete(e, s._id)}
+                  >
+                    🗑
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : null,
+        )}
+        {sessions.length === 0 && (
+          <p className="sidebar-empty-text">No conversations yet.</p>
         )}
       </div>
     </aside>
   );
-}
-
-function getIcon(fileType) {
-  switch (fileType) {
-    case "pdf":
-      return "📄";
-    case "docx":
-      return "📝";
-    case "pptx":
-      return "📊";
-    case "image":
-      return "🖼️";
-    default:
-      return "📁";
-  }
 }
 
 export default Sidebar;

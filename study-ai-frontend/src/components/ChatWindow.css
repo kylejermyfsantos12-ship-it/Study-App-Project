@@ -313,23 +313,20 @@
 }
 
 .chat-input {
-  flex: 1;
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  width: 100%;
+  background: transparent;
+  border: none;
   color: var(--text-primary);
   font-size: 14px;
   line-height: 1.5;
-  padding: 10px 14px;
+  padding: 0;
   resize: none;
   max-height: 140px;
   overflow-y: auto;
-  transition: border-color 0.15s ease;
 }
 
 .chat-input:focus {
   outline: none;
-  border-color: var(--accent);
 }
 
 .chat-input::placeholder {
@@ -377,4 +374,123 @@
   .messages-list {
     padding: 12px;
   }
+}
+
+.input-box {
+  width: 100%;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease;
+}
+
+.input-box:focus-within {
+  border-color: var(--accent);
+}
+
+.input-top {
+  padding: 10px 14px 4px;
+}
+
+.input-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 10px 8px;
+  gap: 8px;
+}
+
+.input-left-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.input-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.attach-btn {
+  background: transparent;
+  border: none;
+  font-size: 17px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.12s ease;
+  color: var(--text-muted);
+}
+
+.attach-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.attached-name {
+  font-size: 12px;
+  color: var(--accent);
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-bar-remove {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.doc-bar-remove:hover {
+  color: var(--danger);
+}
+
+/* Markdown styles inside bubbles */
+.bubble-text p {
+  margin: 0 0 8px;
+}
+.bubble-text p:last-child {
+  margin-bottom: 0;
+}
+.bubble-text code {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.bubble-text pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.bubble-text pre code {
+  background: transparent;
+  padding: 0;
+}
+.bubble-text ul,
+.bubble-text ol {
+  padding-left: 20px;
+  margin: 6px 0;
+}
+.bubble-text li {
+  margin-bottom: 3px;
+}
+.bubble-text strong {
+  font-weight: 600;
+}
+.bubble-text h1,
+.bubble-text h2,
+.bubble-text h3 {
+  margin: 10px 0 6px;
+  font-weight: 600;
 }
